@@ -5,7 +5,7 @@ const tempData = JSON.parse(
 // console.info("temp:", tempData);
 
 const reducedArray = tempData[0].slots.reduce((acc, current) => {
-  console.log("tes:>", acc);
+  // console.log("tes:>", acc);
   if (current.slot === "6-7am") {
     acc.push({
       members: [...current.members, { member: "asdas" }],
@@ -15,4 +15,22 @@ const reducedArray = tempData[0].slots.reduce((acc, current) => {
   return acc;
 }, []);
 
-console.log("reducedArray:>", JSON.stringify(reducedArray));
+// console.log("reducedArray:>", JSON.stringify(reducedArray));
+
+const members = [
+  {
+    member: "12",
+  },
+  {
+    member: "34",
+  },
+];
+
+const memberList = members;
+console.log("mem:>", memberList);
+
+const foun = memberList.find((val) => {
+  return val.member === "341";
+});
+
+console.log("foun:>", foun);

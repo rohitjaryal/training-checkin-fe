@@ -39,10 +39,8 @@ const Slot = () => {
 
   async function updateData(data) {
     const response = await axios.put("http://localhost:3005/slots", data);
-    console.log("updateData:>>", response?.data);
     if (response?.data) {
       const data = await fetchSlotInfo();
-      console.log("data1:>", data);
       setSlotListState({
         data,
       });
@@ -74,6 +72,31 @@ const Slot = () => {
     });
   }, []);
 
+  const handleMemberClick = (index, member, slot, event) => {
+    const redArr = slotListState?.data.slots[index].members.reduce(
+      (acc, current) => {
+        if (current.member !== member) {
+          acc.push({
+            member: current.member,
+          });
+        }
+        return acc;
+      },
+      []
+    );
+
+    const slotsArray = slotListState?.data.slots;
+    slotsArray[index].slot = slot;
+    slotsArray[index].members = redArr;
+
+    setSlotListState({
+      data: {
+        ...slotListState.data,
+        slots: [...slotsArray],
+      },
+    });
+  };
+
   const handleChange = (index, slot, event) => {
     const reducedArray = slotListState?.data.slots.reduce((acc, current) => {
       const membersArray = current.members ? [...current.members] : [];
@@ -100,7 +123,6 @@ const Slot = () => {
   };
 
   const handleAddMember = () => {
-    console.log("data:>>", slotListState?.data);
     updateData(slotListState?.data);
   };
 
@@ -128,19 +150,25 @@ const Slot = () => {
                     key={row?.slot}
                     onChange={(e) => handleChange(index, row.slot, e)}
                   >
-                    {memberListState?.data?.map((val) => (
-                      <MenuItem value={val?.memberName}>
-                        <em>{val?.memberName}</em>
-                      </MenuItem>
-                    ))}
+                    {memberListState?.data?.map(
+                      (val) =>
+                        !row?.members.find((existingMember) => {
+                          return existingMember?.member === val?.memberName;
+                        }) && (
+                          <MenuItem value={val?.memberName}>
+                            <em>{val?.memberName}</em>
+                          </MenuItem>
+                        )
+                    )}
                   </Select>
                   {row?.members &&
                     row?.members.map((val) => (
                       <Button
                         key="1"
-                        variant="contained"
-                        color="primary"
                         href="#contained-buttons"
+                        onClick={(e) =>
+                          handleMemberClick(index, val?.member, row?.slot, e)
+                        }
                       >
                         {val.member}
                       </Button>
