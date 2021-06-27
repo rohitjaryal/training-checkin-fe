@@ -24,7 +24,8 @@ const useStyles = makeStyles({
   },
 });
 
-const Slot = () => {
+const Slot = (props) => {
+  const { checkinDate } = props;
   const classes = useStyles();
   const [memberListState, setMemberListState] = useState({});
   const [slotListState, setSlotListState] = useState({});
@@ -33,7 +34,13 @@ const Slot = () => {
 
   async function fetchSlotInfo() {
     const response = await axios.get("http://localhost:3005/slots");
-    const data = response && response?.data && response?.data[0];
+    // const data = response && response?.data && response?.data[0];
+    const data =
+      response &&
+      response?.data &&
+      response?.data?.find((checkinDates) => {
+        return checkinDates?.slotDate === checkinDate;
+      });
     return data;
   }
 
@@ -41,6 +48,8 @@ const Slot = () => {
     const response = await axios.put("http://localhost:3005/slots", data);
     if (response?.data) {
       const data = await fetchSlotInfo();
+      console.log("test:>", data);
+
       setSlotListState({
         data,
       });
@@ -59,7 +68,16 @@ const Slot = () => {
     }
     async function fetchSlotInfo() {
       const response = await axios.get("http://localhost:3005/slots");
-      const data = response && response?.data && response?.data[0];
+      // const data = response && response?.data && response?.data[0];
+      const data =
+        response &&
+        response?.data &&
+        response?.data?.find((checkinDates) => {
+          return checkinDates?.slotDate === checkinDate;
+        });
+      console.log("test:>", data);
+
+      // return data;
       setSlotListState({
         data,
       });
@@ -152,7 +170,7 @@ const Slot = () => {
                   >
                     {memberListState?.data?.map(
                       (val) =>
-                        !row?.members.find((existingMember) => {
+                        !row?.members?.find((existingMember) => {
                           return existingMember?.member === val?.memberName;
                         }) && (
                           <MenuItem value={val?.memberName}>

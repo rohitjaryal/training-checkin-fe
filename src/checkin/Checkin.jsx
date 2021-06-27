@@ -1,4 +1,4 @@
-import Slot from "./components/Slot";
+import PageTab from "./components/PageTab";
 import moment from "moment";
 
 const Checkin = () => {
@@ -8,7 +8,7 @@ const Checkin = () => {
     <div>
       <div>Checkin Day: {currentDay}</div>
       <div>Checkin Date: {currentTime.toString()}</div>
-      <Slot />
+      <PageTab />
     </div>
   );
 };
