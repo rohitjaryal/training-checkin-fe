@@ -10,12 +10,11 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
+import { fetchMemberEnum, fetchSlots, updateSlotData } from "../api/apiUtil";
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
-
-const axios = require("axios").default;
 
 const useStyles = makeStyles({
   table: {
@@ -33,8 +32,8 @@ const Slot = (props) => {
   const [errorAlertOpen, setErrorAlertOpen] = useState(false);
 
   async function fetchSlotInfo() {
-    const response = await axios.get("http://localhost:3005/slots");
-    // const data = response && response?.data && response?.data[0];
+    const response = await fetchSlots();
+
     const data =
       response &&
       response?.data &&
@@ -45,10 +44,9 @@ const Slot = (props) => {
   }
 
   async function updateData(data) {
-    const response = await axios.put("http://localhost:3005/slots", data);
+    const response = await updateSlotData(data);
     if (response?.data) {
       const data = await fetchSlotInfo();
-      console.log("test:>", data);
 
       setSlotListState({
         data,
@@ -61,14 +59,13 @@ const Slot = (props) => {
 
   useEffect(() => {
     async function fetchData() {
-      const response = await axios.get("http://localhost:3005/enum/members");
+      const response = await fetchMemberEnum();
       setMemberListState({
         data: response?.data,
       });
     }
     async function fetchSlotInfo() {
-      const response = await axios.get("http://localhost:3005/slots");
-      // const data = response && response?.data && response?.data[0];
+      const response = await fetchSlots();
       const data =
         response &&
         response?.data &&
@@ -158,7 +155,7 @@ const Slot = (props) => {
           {slotListState?.data &&
             slotListState?.data?.slots?.map((row, index) => (
               <TableRow key={row.slot}>
-                <TableCell component="th" scope="row">
+                <TableCell component="th" scope="row" key={index + row.slot}>
                   {row.slot}
                 </TableCell>
                 <TableCell align="right" key={row.slot}>
@@ -173,7 +170,10 @@ const Slot = (props) => {
                         !row?.members?.find((existingMember) => {
                           return existingMember?.member === val?.memberName;
                         }) && (
-                          <MenuItem value={val?.memberName}>
+                          <MenuItem
+                            value={val?.memberName}
+                            key={row.slot + val.memberName}
+                          >
                             <em>{val?.memberName}</em>
                           </MenuItem>
                         )
@@ -182,7 +182,7 @@ const Slot = (props) => {
                   {row?.members &&
                     row?.members.map((val) => (
                       <Button
-                        key="1"
+                        key={row.slot + val.member}
                         href="#contained-buttons"
                         onClick={(e) =>
                           handleMemberClick(index, val?.member, row?.slot, e)

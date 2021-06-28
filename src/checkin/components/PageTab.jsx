@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import Slot from "./Slot";
-import moment from "moment";
+import { getConsecutiveDates } from "../../utils/dateUtils";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -35,8 +34,8 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
+        <Box>
+          <div>{children}</div>
         </Box>
       )}
     </div>
@@ -57,19 +56,7 @@ const PageTab = () => {
     setValue(newValue);
   };
 
-  const consecutiveDays = [];
-  consecutiveDays.push({
-    currentDate: moment().format("YYYY-MM-DD"),
-    currentDayName: moment().format("dddd").toLocaleUpperCase(),
-  });
-  consecutiveDays.push({
-    currentDate: moment().add(1, "day").format("YYYY-MM-DD"),
-    currentDayName: moment().add(1, "day").format("dddd").toLocaleUpperCase(),
-  });
-  consecutiveDays.push({
-    currentDate: moment().add(2, "day").format("YYYY-MM-DD"),
-    currentDayName: moment().add(2, "day").format("dddd").toLocaleUpperCase(),
-  });
+  const consecutiveDays = getConsecutiveDates(3);
 
   return (
     <div className={classes.root}>
@@ -81,7 +68,11 @@ const PageTab = () => {
         >
           {consecutiveDays.map((individualDate, index) => {
             return (
-              <Tab label={individualDate.currentDate} {...a11yProps(index)} />
+              <Tab
+                key={index}
+                label={individualDate.currentDate}
+                {...a11yProps(index)}
+              />
             );
           })}
         </Tabs>
@@ -89,7 +80,7 @@ const PageTab = () => {
 
       {consecutiveDays.map((individualDate, index) => {
         return (
-          <TabPanel value={value} index={index}>
+          <TabPanel key={index} value={value} index={index}>
             <Slot checkinDate={individualDate.currentDate} />
           </TabPanel>
         );
